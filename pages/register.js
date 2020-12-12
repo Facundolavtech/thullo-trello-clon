@@ -10,7 +10,7 @@ import {
 } from "../redux/actions/authActions";
 import { Button } from "antd";
 
-const Alert = styled.p`
+const AlertError = styled.p`
   display: block;
   width: 80%;
   margin: auto;
@@ -20,21 +20,32 @@ const Alert = styled.p`
   margin-bottom: 5px;
 `;
 
+const AlertSuccess = styled.p`
+  color: rgb(97, 190, 69);
+  display: block;
+  width: 80%;
+  margin: auto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 5px;
+`;
+
 const registerPage = () => {
   const router = useRouter();
+
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const message = useSelector((state) => state.auth.message);
 
   const getAuthUserFunction = () => {
     dispatch(getAuthUserAction());
   };
 
-  const dispatch = useDispatch();
-  const loading = useSelector((state) => state.auth.loading);
-  const userInfo = useSelector((state) => state.auth.userInfo);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    getAuthUserFunction();
+    if (!userInfo) getAuthUserFunction();
 
     if (userInfo && token) {
       router.push("/");
@@ -101,7 +112,13 @@ const registerPage = () => {
             <img src="./assets/img/logo.png" alt="logo" />
           </div>
           <h1>Register</h1>
-          {error ? <Alert className={error.type}>{error.msg}</Alert> : null}
+          {message.type === "success" ? (
+            <AlertSuccess>{message.content}</AlertSuccess>
+          ) : null}
+          {message.type === "error" ? (
+            <AlertError>{message.content}</AlertError>
+          ) : null}
+          {error ? <AlertError>{error.msg}</AlertError> : null}
           <form onSubmit={handleSubmit}>
             <label htmlFor="username">Name</label>
             <input

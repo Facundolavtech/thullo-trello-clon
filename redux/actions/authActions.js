@@ -6,10 +6,9 @@ import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   GET_USER,
+  GET_USER_ERROR,
 } from "../types/authTypes";
-
 import setToken from "../../config/setTokenOnHeaders";
-
 import axiosClient from "../../config/axios";
 
 export function registerUserAction(credentials) {
@@ -18,9 +17,9 @@ export function registerUserAction(credentials) {
 
     try {
       const newUser = await axiosClient.post("/users", credentials);
-      dispatch(registerUserSuccess(newUser));
+      dispatch(registerUserSuccess(newUser.data.msg));
     } catch (error) {
-      dispatch(registerUserError(error.msg));
+      dispatch(registerUserError(error));
     }
   };
 }
@@ -36,19 +35,20 @@ const registerUserSuccess = (message) => ({
 
 const registerUserError = (error) => ({
   type: REGISTER_ERROR,
-  payload: error,
+  payload: {
+    error,
+    content: "Email or username already in use",
+  },
 });
 
-export function loginAction(email, password) {
+export function loginAction(credentials) {
   return async (dispatch) => {
     dispatch(login());
 
     try {
-      const loginUser = await axiosClient.post("/auth", email, password);
-      dispatch(loginUserSuccess(loginUser));
-
+      const loginUser = await axiosClient.post("/auth", credentials);
+      dispatch(loginUserSuccess(loginUser.data.msg));
       localStorage.setItem("token", loginUser.data.token);
-
       dispatch(getAuthUserAction());
     } catch (error) {
       dispatch(loginUserError(error));
@@ -60,16 +60,14 @@ const login = () => ({
   type: LOGIN,
 });
 
-const loginUserSuccess = (loginUser) => ({
+const loginUserSuccess = (message) => ({
   type: LOGIN_SUCCESS,
-  payload: {
-    message: loginUser.data.msg,
-  },
+  payload: message,
 });
 
 const loginUserError = (error) => ({
   type: LOGIN_ERROR,
-  payload: error,
+  payload: { error, content: "Incorrect email or password" },
 });
 
 export function getAuthUserAction() {
@@ -82,7 +80,6 @@ export function getAuthUserAction() {
   }
 
   return async (dispatch) => {
-    
     try {
       const userData = await axiosClient.get("/auth");
       console.log(userData);
@@ -92,12 +89,17 @@ export function getAuthUserAction() {
         dispatch(getUserData(userData.data));
       }
     } catch (error) {
-      dispatch(loginUserError());
+      dispatch(getUserDataError(error));
     }
-  }
-};
+  };
+}
 
 const getUserData = (data) => ({
   type: GET_USER,
   payload: data,
+});
+
+const getUserDataError = (error) => ({
+  type: GET_USER_ERROR,
+  payload: error,
 });

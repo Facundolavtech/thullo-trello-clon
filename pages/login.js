@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginAction, getAuthUserAction } from "../redux/actions/authActions";
 import { Button } from "antd";
 
-const Alert = styled.p`
+const AlertError = styled.p`
   display: block;
   width: 80%;
   margin: auto;
@@ -17,14 +17,37 @@ const Alert = styled.p`
   margin-bottom: 5px;
 `;
 
+const AlertSuccess = styled.p`
+  color: rgb(97, 190, 69);
+  display: block;
+  width: 80%;
+  margin: auto;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 5px;
+`;
+
 const loginPage = () => {
   const router = useRouter();
+
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+  const message = useSelector((state) => state.auth.message);
 
   const getAuthUserFunction = () => {
     dispatch(getAuthUserAction());
   };
 
-  const [error, setError] = useState(null);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!userInfo) getAuthUserFunction();
+
+    if (userInfo && token) {
+      router.push("/");
+    }
+  }, [userInfo]);
 
   const [user, setUser] = useState({
     email: "",
@@ -33,19 +56,7 @@ const loginPage = () => {
 
   const { email, password } = user;
 
-  const dispatch = useDispatch();
-  const loading = useSelector((state) => state.auth.loading);
-  const userInfo = useSelector((state) => state.auth.userInfo);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    getAuthUserFunction();
-
-    if (userInfo && token) {
-      router.push("/");
-    }
-  }, [userInfo]);
+  const [error, setError] = useState(null);
 
   const loginUser = (user) => {
     dispatch(loginAction(user));
@@ -58,16 +69,14 @@ const loginPage = () => {
     if (email.trim() === "" || password.trim() === "") {
       setError({
         msg: "Complete all the fields",
-        type: "alert-danger",
       });
     } else if (password.trim().length < 6) {
       setError({
         msg: "Password have been at least 6 characters",
-        type: "alert-danger",
       });
     } else {
       setError(null);
-      loginUser({ email, password });
+      loginUser({email, password})
     }
   };
 
@@ -85,7 +94,15 @@ const loginPage = () => {
             <img src="./assets/img/logo.png" alt="logo" />
           </div>
           <h1>Login</h1>
-          {error ? <Alert className={error.type}>{error.msg}</Alert> : null}
+          {message.type === "success" ? (
+            <AlertSuccess>{message.content}</AlertSuccess>
+          ) : null}
+          {message.type === "error" ? (
+            <AlertError>{message.content}</AlertError>
+          ) : null}
+          {error ? (
+            <AlertError className={error.type}>{error.msg}</AlertError>
+          ) : null}
           <form onSubmit={handleSubmit}>
             <label htmlFor="email">Email</label>
             <input
@@ -106,7 +123,7 @@ const loginPage = () => {
             {loading ? (
               <Button type="primary" loading></Button>
             ) : (
-              <button type="submit"> Login</button>
+              <button type="submit">Login</button>
             )}
           </form>
           <Link href="/forgot">
