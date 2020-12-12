@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import register from "../sass/register.module.scss";
 import styled from "@emotion/styled";
+import { useRouter } from "next/router";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  registerUserAction,
+  getAuthUserAction,
+} from "../redux/actions/authActions";
+import { Button } from "antd";
 
 const Alert = styled.p`
   display: block;
@@ -14,25 +21,47 @@ const Alert = styled.p`
 `;
 
 const registerPage = () => {
+  const router = useRouter();
+
+  const getAuthUserFunction = () => {
+    dispatch(getAuthUserAction());
+  };
+
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    getAuthUserFunction();
+
+    if (userInfo && token) {
+      router.push("/");
+    }
+  }, [userInfo]);
+
   const [user, setUser] = useState({
+    name: "",
     username: "",
     email: "",
     password: "",
   });
 
-  const ERRORS_INITIAL_STATE = {
-    msg: "",
-    type: "",
-  };
-  const [error, setError] = useState(ERRORS_INITIAL_STATE);
+  const [error, setError] = useState(null);
 
-  const { username, email, password } = user;
+  const { name, username, email, password } = user;
+
+  const registerUser = (user) => {
+    dispatch(registerUserAction(user));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     //Validate
     if (
+      name.trim() === "" ||
       username.trim() === "" ||
       email.trim() === "" ||
       password.trim() === ""
@@ -53,10 +82,9 @@ const registerPage = () => {
         type: "alert-danger",
       });
     } else {
-      setError(ERRORS_INITIAL_STATE);
+      setError(null);
+      registerUser({ name, username, email, password });
     }
-
-    console.log("Registrando usuario");
   };
 
   const handleChange = (e) => {
@@ -78,7 +106,15 @@ const registerPage = () => {
             <label htmlFor="username">Name</label>
             <input
               type="text"
-              placeholder="Insert your name"
+              placeholder="Enter your name"
+              name="name"
+              value={name}
+              onChange={handleChange}
+            />
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              placeholder="Enter your username"
               name="username"
               value={username}
               onChange={handleChange}
@@ -86,7 +122,7 @@ const registerPage = () => {
             <label htmlFor="email">Email</label>
             <input
               type="email"
-              placeholder="Insert your email"
+              placeholder="Enter your email"
               name="email"
               value={email}
               onChange={handleChange}
@@ -96,12 +132,16 @@ const registerPage = () => {
             </label>
             <input
               type="password"
-              placeholder="Insert your password"
+              placeholder="Enter your password"
               name="password"
               value={password}
               onChange={handleChange}
             />
-            <button type="submit">Register</button>
+            {loading ? (
+              <Button type="primary" loading></Button>
+            ) : (
+              <button type="submit">Register</button>
+            )}
           </form>
           <Link href="/login">
             <a className={register.register__link}>Have an account? Sign In</a>

@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import login from "../sass/login.module.scss";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
+import { loginAction, getAuthUserAction } from "../redux/actions/authActions";
+import { Button } from "antd";
 
 const Alert = styled.p`
   display: block;
@@ -14,18 +18,38 @@ const Alert = styled.p`
 `;
 
 const loginPage = () => {
+  const router = useRouter();
+
+  const getAuthUserFunction = () => {
+    dispatch(getAuthUserAction());
+  };
+
+  const [error, setError] = useState(null);
+
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
 
-  const ERRORS_INITIAL_STATE = {
-    msg: "",
-    type: "",
-  };
-  const [error, setError] = useState(ERRORS_INITIAL_STATE);
-
   const { email, password } = user;
+
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading);
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    getAuthUserFunction();
+
+    if (userInfo && token) {
+      router.push("/");
+    }
+  }, [userInfo]);
+
+  const loginUser = (user) => {
+    dispatch(loginAction(user));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,10 +66,9 @@ const loginPage = () => {
         type: "alert-danger",
       });
     } else {
-      setError(ERRORS_INITIAL_STATE);
+      setError(null);
+      loginUser({ email, password });
     }
-
-    console.log("Ingresando");
   };
 
   const handleChange = (e) => {
@@ -80,7 +103,11 @@ const loginPage = () => {
               value={password}
               onChange={handleChange}
             />
-            <button type="submit">Login</button>
+            {loading ? (
+              <Button type="primary" loading></Button>
+            ) : (
+              <button type="submit"> Login</button>
+            )}
           </form>
           <Link href="/forgot">
             <a className={login.forgot__link}>Forgot your password?</a>
