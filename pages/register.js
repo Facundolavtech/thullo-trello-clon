@@ -8,7 +8,6 @@ import {
   registerUserAction,
   getAuthUserAction,
 } from "../redux/actions/authActions";
-import { Button } from "antd";
 
 const AlertError = styled.p`
   display: block;
@@ -109,7 +108,7 @@ const registerPage = () => {
       <div className={register.container}>
         <div className={register.card}>
           <div className={register.img__container}>
-            <img src="./assets/img/logo.png" alt="logo" />
+            <img src="./assets/img/logo-transparent.png" alt="logo" />
           </div>
           <h1>Register</h1>
           {message.type === "success" ? (
@@ -154,14 +153,12 @@ const registerPage = () => {
               value={password}
               onChange={handleChange}
             />
-            {loading ? (
-              <Button type="primary" loading></Button>
-            ) : (
-              <button type="submit">Register</button>
-            )}
+            <button type="submit" className={register.submit__button}>
+              Register
+            </button>
           </form>
           <Link href="/login">
-            <a className={register.register__link}>Have an account? Sign In</a>
+            <a className={register.login__link}>Have an account? Sign In</a>
           </Link>
         </div>
       </div>

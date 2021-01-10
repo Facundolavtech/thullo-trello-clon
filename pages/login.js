@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAction, getAuthUserAction } from "../redux/actions/authActions";
-import { Button } from "antd";
 
 const AlertError = styled.p`
   display: block;
@@ -76,7 +75,7 @@ const loginPage = () => {
       });
     } else {
       setError(null);
-      loginUser({email, password})
+      loginUser({ email, password });
     }
   };
 
@@ -91,7 +90,7 @@ const loginPage = () => {
       <div className={login.container}>
         <div className={login.card}>
           <div className={login.img__container}>
-            <img src="./assets/img/logo.png" alt="logo" />
+            <img src="./assets/img/logo-transparent.png" alt="logo" />
           </div>
           <h1>Login</h1>
           {message.type === "success" ? (
@@ -107,7 +106,7 @@ const loginPage = () => {
             <label htmlFor="email">Email</label>
             <input
               type="email"
-              placeholder="Insert your email"
+              placeholder="Enter your email"
               name="email"
               value={email}
               onChange={handleChange}
@@ -115,16 +114,14 @@ const loginPage = () => {
             <label htmlFor="password">Password</label>
             <input
               type="password"
-              placeholder="Insert your password"
+              placeholder="Enter your password"
               name="password"
               value={password}
               onChange={handleChange}
             />
-            {loading ? (
-              <Button type="primary" loading></Button>
-            ) : (
-              <button type="submit">Login</button>
-            )}
+            <button type="submit" className={login.submit__button}>
+              Login
+            </button>
           </form>
           <Link href="/forgot">
             <a className={login.forgot__link}>Forgot your password?</a>
