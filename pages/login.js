@@ -8,22 +8,30 @@ import { loginAction, getAuthUserAction } from "../redux/actions/authActions";
 
 const AlertError = styled.p`
   display: block;
-  width: 80%;
+  width: 100%;
   margin: auto;
   font-size: 16px;
   color: rgb(207, 71, 71);
   font-weight: 500;
   margin-bottom: 5px;
+
+  @media screen and (min-width: 1024px) {
+    width: 80%;
+  }
 `;
 
 const AlertSuccess = styled.p`
   color: rgb(97, 190, 69);
   display: block;
-  width: 80%;
+  width: 100%;
   margin: auto;
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 5px;
+
+  @media screen and (min-width: 1024px) {
+    width: 80%;
+  }
 `;
 
 const loginPage = () => {
