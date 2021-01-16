@@ -1,6 +1,11 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  openModalAction,
+  closeModalAction,
+} from "../redux/actions/modalActions";
 
 const StyledNewBoardModal = styled.div`
   width: 307px;
@@ -152,11 +157,21 @@ const StyledLabel = styled.label`
 `;
 
 const NewBoard = () => {
+  const dispatch = useDispatch();
+  const modalIsOpen = useSelector((state) => state.modal.open);
+
+  const openModalFunction = () => {
+    dispatch(openModalAction());
+  };
+  const closeModalFunction = () => {
+    dispatch(closeModalAction());
+  };
+
   return (
     <>
       <StyledNewBoardModal>
         <>
-          <span>X</span>
+          <span onClick={() => closeModalFunction()}>X</span>
           <img src="/assets/img/oficina.jpg" />
           <input type="text" placeholder="Add board title" />
           <div>
@@ -166,7 +181,7 @@ const NewBoard = () => {
             <input id="private-switch" type="checkbox" />
           </div>
           <div>
-            <button>Cancel</button>
+            <button onClick={() => closeModalFunction()}>Cancel</button>
             <button>&#43; Create</button>
           </div>
         </>
