@@ -7,7 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   registerUserAction,
   getAuthUserAction,
+  clearMessageAction,
 } from "../redux/actions/authActions";
+import { Button } from "react-bootstrap";
+import Spinner from "react-bootstrap/Spinner";
 
 const AlertError = styled.p`
   display: block;
@@ -40,6 +43,9 @@ const registerPage = () => {
   const getAuthUserFunction = () => {
     dispatch(getAuthUserAction());
   };
+  const clearMessageFunction = () => {
+    dispatch(clearMessageAction());
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -50,6 +56,13 @@ const registerPage = () => {
       router.push("/");
     }
   }, [userInfo]);
+
+  useEffect(() => {
+    if (message.content === "User has succesfully created") {
+      router.push("/login");
+      clearMessageFunction();
+    }
+  }, [message]);
 
   const [user, setUser] = useState({
     name: "",
@@ -63,7 +76,9 @@ const registerPage = () => {
   const { name, username, email, password } = user;
 
   const registerUser = (user) => {
-    dispatch(registerUserAction(user));
+    message.content === "User has succesfully created"
+      ? null
+      : dispatch(registerUserAction(user));
   };
 
   const handleSubmit = (e) => {
@@ -91,9 +106,18 @@ const registerPage = () => {
           "Name have been a minimum of 2 characters and maximum of 12 characters",
         type: "alert-danger",
       });
+    } else if (name.trim().length > 15) {
+      setError({
+        msg: "Name have been maximum 15 characters",
+        type: "alert-danger",
+      });
     } else {
       setError(null);
       registerUser({ name, username, email, password });
+      setUser({
+        ...user,
+        password: "",
+      });
     }
   };
 
@@ -153,9 +177,26 @@ const registerPage = () => {
               value={password}
               onChange={handleChange}
             />
-            <button type="submit" className={register.submit__button}>
-              Register
-            </button>
+            {loading ? (
+              <>
+                <Button variant="primary" disabled className="submit__disabled">
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  <span>Loading</span>
+                </Button>{" "}
+              </>
+            ) : (
+              <>
+                <button type="submit" className={register.submit__button}>
+                  Register
+                </button>
+              </>
+            )}
           </form>
           <Link href="/login">
             <a className={register.login__link}>Have an account? Sign In</a>

@@ -24,6 +24,7 @@
     font-weight: bold;
     outline: none;
     border: none;
+    font-size: 0.9em;
 
     &:hover {
       background-color: rgb(38, 109, 201);
@@ -41,5 +42,4 @@
   margin: auto;
   display: flex;
   flex-flow: row wrap;
-
 }

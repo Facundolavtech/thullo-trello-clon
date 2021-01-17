@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { loginAction, getAuthUserAction } from "../redux/actions/authActions";
+import { Button } from "react-bootstrap";
+import Spinner from "react-bootstrap/Spinner";
 
 const AlertError = styled.p`
   display: block;
@@ -66,7 +68,9 @@ const loginPage = () => {
   const [error, setError] = useState(null);
 
   const loginUser = (user) => {
-    dispatch(loginAction(user));
+    message.content === "Login succesfully"
+      ? null
+      : dispatch(loginAction(user));
   };
 
   const handleSubmit = (e) => {
@@ -84,6 +88,10 @@ const loginPage = () => {
     } else {
       setError(null);
       loginUser({ email, password });
+      setUser({
+        ...user,
+        password: "",
+      });
     }
   };
 
@@ -127,9 +135,26 @@ const loginPage = () => {
               value={password}
               onChange={handleChange}
             />
-            <button type="submit" className={login.submit__button}>
-              Login
-            </button>
+            {loading ? (
+              <>
+                <Button variant="primary" disabled className="submit__disabled">
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                  <span>Loading</span>
+                </Button>{" "}
+              </>
+            ) : (
+              <>
+                <button type="submit" className={login.submit__button}>
+                  Login
+                </button>
+              </>
+            )}
           </form>
           <Link href="/forgot">
             <a className={login.forgot__link}>Forgot your password?</a>

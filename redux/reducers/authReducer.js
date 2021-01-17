@@ -7,6 +7,8 @@ import {
   LOGIN_ERROR,
   GET_USER,
   GET_USER_ERROR,
+  LOGOUT,
+  CLEAR_MESSAGE,
 } from "../types/authTypes";
 
 const initialState = {
@@ -58,6 +60,13 @@ export default function authReducer(state = initialState, action) {
         ...state,
         loading: false,
         userInfo: null,
+      };
+    case LOGOUT:
+    case CLEAR_MESSAGE:
+      return {
+        ...state,
+        userInfo: null,
+        message: { type: null, content: null },
       };
     default:
       return state;

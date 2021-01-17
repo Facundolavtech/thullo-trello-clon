@@ -1,18 +1,20 @@
 .container {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
 }
 
 .card {
   width: 80%;
   height: 70%;
+  max-width: 420px;
   margin: 0 auto;
   margin-top: 50px;
   background-color: rgb(255, 255, 255);
   padding: 20px;
   display: flex;
   flex-direction: column;
+  padding-bottom: 30px;
 
   .img__container {
     width: 100%;
@@ -94,7 +96,7 @@
   .login__link {
     display: block;
     width: 100%;
-    margin: auto;
+    margin: 0 auto 20px auto;
     color: rgb(47, 128, 237);
     font-size: 18px;
     font-weight: 500;
@@ -103,17 +105,20 @@
 
 @media screen and (min-width: 1024px) {
   .container {
-    width: 80%;
+    width: 100%;
+    height: 100vh;
     margin: auto;
+    background-color: rgb(47, 128, 237);
   }
   .card {
-    width: 45%;
-    height: 80%;
+    width: 30%;
+    min-width: 420px;
+    height: auto;
     max-width: 420px;
     margin: auto;
     background-color: rgb(252, 252, 252);
-    padding: 40px 20px 40px 20px;
-    box-shadow: 0px 0px 3px 3px rgb(250, 250, 250);
+    padding: 60px 20px 50px 20px;
+    box-shadow: 0px 0px 10px 0px rgb(49, 49, 49, 0.3);
 
     form {
       width: 80%;

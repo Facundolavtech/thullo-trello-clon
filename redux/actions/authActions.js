@@ -7,6 +7,8 @@ import {
   LOGIN_ERROR,
   GET_USER,
   GET_USER_ERROR,
+  LOGOUT,
+  CLEAR_MESSAGE,
 } from "../types/authTypes";
 import setToken from "../../config/setTokenOnHeaders";
 import axiosClient from "../../config/axios";
@@ -102,4 +104,26 @@ const getUserData = (data) => ({
 const getUserDataError = (error) => ({
   type: GET_USER_ERROR,
   payload: error,
+});
+
+export function logoutAction() {
+  localStorage.removeItem("token");
+
+  return async (dispatch) => {
+    dispatch(logout());
+  };
+}
+
+const logout = () => ({
+  type: LOGOUT,
+});
+
+export function clearMessageAction() {
+  return async (dispatch) => {
+    dispatch(clearMessage());
+  };
+}
+
+const clearMessage = () => ({
+  type: CLEAR_MESSAGE,
 });

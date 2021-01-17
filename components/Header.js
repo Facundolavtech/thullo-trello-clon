@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { logoutAction } from "../redux/actions/authActions";
+import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
 
 const StyledHeader = styled.header`
   width: 100%;
@@ -60,6 +63,7 @@ const StyledHeader = styled.header`
         height: 55%;
         width: 90px;
         border-radius: 8px;
+        font-size: 0.9em;
         background-color: rgb(47, 128, 237);
         color: #fff;
         font-weight: bold;
@@ -84,6 +88,7 @@ const StyledProfile = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  position: relative;
 
   img {
     display: block;
@@ -98,7 +103,55 @@ const StyledProfile = styled.div`
   }
 
   p {
+    display: inline-block;
+    margin: 0;
     margin-left: 25px;
+  }
+
+  div {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.23s ease-in;
+    position: absolute;
+    top: 69px;
+    right: -15%;
+    min-width: 220px;
+    background-color: rgb(250, 250, 250);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    justify-content: center;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.05);
+
+    a {
+      display: flex;
+      background-color: rgb(47, 128, 237);
+      margin: 10px auto;
+      width: 80%;
+      font-size: 0.9em;
+      color: #fff !important;
+      height: 35px !important;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      font-weight: 500;
+
+      &:hover {
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+      }
+    }
+
+    a:last-of-type {
+      background-color: rgb(221, 54, 54);
+    }
+  }
+
+  &:hover div {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.23s ease-in;
   }
 
   &:hover span {
@@ -120,27 +173,52 @@ const StyledProfile = styled.div`
 `;
 
 const Header = () => {
-  return (
-    <StyledHeader>
-      <Link href="/">
-        <a>
-          <img src="/assets/img/logo-transparent.png" />
-          Thullo
-        </a>
-      </Link>
-      <div>
-        <form>
-          <input type="text" placeholder="Keyword.." />
-          <button type="submit">Search</button>
-        </form>
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-        <StyledProfile>
-          <img src="assets/img/profile-img.jpg" />
-          <p>Facundo</p>
-          <span></span>
-        </StyledProfile>
-      </div>
-    </StyledHeader>
+  const userInfo = useSelector((state) => state.auth.userInfo);
+
+  const logoutFunction = () => {
+    dispatch(logoutAction());
+    router.push("/login");
+  };
+
+  return (
+    <>
+      {userInfo ? (
+        <>
+          <StyledHeader>
+            <Link href="/">
+              <a>
+                <img src="/assets/img/logo-transparent.png" />
+                Thullo
+              </a>
+            </Link>
+            <div>
+              <form>
+                <input type="text" placeholder="Keyword.." />
+                <button type="submit">Search</button>
+              </form>
+
+              <StyledProfile>
+                <img src="assets/img/profile-default.png" />
+                <p>{userInfo.name}</p>
+                <span></span>
+                <div>
+                  <Link href="/profile">
+                    <a>Profile</a>
+                  </Link>
+                  <Link href="/changepassword">
+                    <a>Change password</a>
+                  </Link>
+                  <a onClick={() => logoutFunction()}>Logout</a>
+                </div>
+              </StyledProfile>
+            </div>
+          </StyledHeader>
+        </>
+      ) : null}
+    </>
   );
 };
 
